@@ -2,7 +2,7 @@
 Tracks achievement progress
 the achievement data is from NA so it might not work on other regions.
 
-Get achievements ID from teralore.com/us/achievements/
+Get achievements ID from http://teralore.com/us/achievements/
 
 ## Usage:
 Enable/Disable
