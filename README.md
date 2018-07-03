@@ -3,7 +3,7 @@
 # Achievements-Master
 Tracks achievement progress (list of tracked achievements are carried over playsessions - saved into a per-character file)
 
-Also makes it fairly easy to check if you have spefici achievements and which of its requirements are already done.
+Also makes it fairly easy to check if you have specific achievements and which of its requirements are already done.
 
 the achievement data is from NA, but if you put a datacenter achievements data into data.json instead - it'd be in your preferred language
 
