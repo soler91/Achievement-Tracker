@@ -1,41 +1,150 @@
 const   Command = require('command'),
+		path = require('path'),
+		fs = require('fs'),
         ACHS = require('./data.json');
 
 module.exports = function achs(dispatch) {
     const command = Command(dispatch);
 
     let tracking = false,
-        trackList = {};
+        trackList = {},
+		changed = false,
+		settingsFileName;
+	
+	function saveJson(obj) {
+		if(obj){
+        try {
+            fs.writeFileSync(path.join(__dirname, settingsFileName), JSON.stringify(obj, null, "\t"));
+        } catch (err) {
+            return false;
+        }
+		}
+    }
+	
+	function loadJson() {
+        try {
+            return JSON.parse(fs.readFileSync(path.join(__dirname, settingsFileName), "utf8"));
+        } catch (err) {
+            return {};
+        }
+    }
+	
+	if(!fs.existsSync(path.join(__dirname, './saves')))
+	{
+		fs.mkdirSync(path.join(__dirname, './saves'));
+	}
+			
+	process.on('exit', ()=> {
+		console.log('Saving achievements to database file...');
+		if(changed)
+		{
+			saveJson(trackList);
+		}
+	});
         
-    command.add('ach', (opt, value) => {
-        opt = opt.toLowerCase();
-        
+    command.add('a', (opt, ...value) => {
+        //opt = opt.toLowerCase();
+        value = value.join(' ');
         switch(opt){
             case 'e':
                 tracking = !tracking;
                 command.message("Tracking enabled: "+tracking);
             break;
             
-            case 't':
-                if(ACHS[value]){
-                    command.message("Tracking: ");
-                    command.message(ACHS[value].name);
-                    trackList[value] = value;
+			case 't':
+            case 'a':
+				let found = false;
+                if(!isNaN(value) && ACHS[value])
+				{
+					if(!trackList[value])
+					{
+						tracking = true;
+						found = true;
+						command.message(`now Tracking: ${value}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${value}\">&lt;${ACHS[value].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[value].detail}</font>`);
+						trackList[value] = {name: ACHS[value].name, count: 0};
+					}
+					else
+					{
+						command.message(j +" is already being tracked");
+					}
                 }
+				else if(isNaN(value))
+				{
+					for(let l in ACHS)
+					{
+						if(ACHS[l].name === value)
+						{
+							if(!trackList[l])
+							{
+								tracking = true;
+								found = true;
+								command.message(`now Tracking: ${l}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${l}\">&lt;${ACHS[l].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[l].detail}</font>`);
+								trackList[l] = {name: ACHS[l].name, count: 0};
+							}
+							else
+							{
+								command.message(j +" is already being tracked");
+							}
+							break;
+						}
+					}
+                }
+				if(!found)
+				{
+					command.message(value+' not found in data.json, please request achievements database update, but before that please check that your input is 100% correct');
+				}
+				else
+				{
+					changed = true;
+				}
             break;
             
+			case 'd':
             case 'r':
-                if(trackList[value]){
-                    delete trackList[value]
+                if(trackList[value])
+				{
+					command.message("Removed from tracking: " + trackList[value].name);
+                    delete trackList[value];
+					changed = true;
                 }
-                command.message("Removed from tracking: ");
-                command.message(ACHS[value].name);
+				else
+				{
+					command.message(value +" not found, you should use correct numerical value");
+				}
             break;
-            
+			
+			case 'c':
+			{
+				command.message("Clearing whole tracking list...");
+                for(let i in trackList)
+				{
+					delete trackList[i];
+					changed = true;
+				}
+			}
+            break;
+			
+			case 's':
+			{
+				command.message("Saving tracking list database...");
+                saveJson(trackList);
+			}
+            break;
+			
             case 'l':
                 command.message("Tracking list:");
-                for(let i in trackList){
-                    command.message(ACHS[trackList[i]].name);
+                for(let i in trackList)
+				{
+					if(trackList[i].count == 1 || trackList[i].count == 0)
+					{
+						let color = (!trackList[i].count ? "#FF0000" : "#008000" );
+						command.message(`${i}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${i}\">&lt;${trackList[i].name}&gt;</ChatLinkAction></font> \n<font color="#FDD017">${ACHS[i].detail}</font> - <font color="${color}">${trackList[i].count}</font>`);
+					}
+					else
+					{
+						command.message(`${i}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${i}\">&lt;${trackList[i].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[i].detail}</font> ${trackList[i].count}`);
+						//console.log(`${i}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${i}\">&lt;${trackList[i].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[i].detail}</font> ${trackList[i].count}`);
+					}
                 }
             break;
             
@@ -44,31 +153,186 @@ module.exports = function achs(dispatch) {
             break;
         }
 	})
+	
+	dispatch.hook('S_LOGIN', 9, e=> {
+            settingsFileName = `./saves/${e.name}-${e.serverId}.json`;
+			trackList = loadJson();
+			if(Object.keys(trackList).length)
+			{
+				tracking = true;
+			}
 
+        });
+	
     dispatch.hook('S_UPDATE_ACHIEVEMENT_PROGRESS', 1, e => {
         if(tracking){
-            for(let i in e.achievements){
-                
-                if(trackList[(e.achievements[i].id).toString()]){
-                    if(ACHS[(e.achievements[i].id).toString()].name){
-                    let name = ACHS[(e.achievements[i].id).toString()].name;
-                    command.message(name+':');
-                    }
-                    
-                    for(let j in e.achievements[i].requirements){
-                        let str = ACHS[(e.achievements[i].id).toString()].condition[(e.achievements[i].requirements[j].index).toString()].string,
-                            amount = e.achievements[i].requirements[j].amount;
-                        if(ACHS[(e.achievements[i].id).toString()].condition[(e.achievements[i].requirements[j].index).toString()].max){
-                            let max = ACHS[(e.achievements[i].id).toString()].condition[(e.achievements[i].requirements[j].index).toString()].max;
-                            command.message(`${str} <font color="#FF0000">${amount}</font>/<font color="#FF0000">${max}</font>`);
-                        }
-                        else{
-                        command.message(str+' '+amount)
-                        }
-                    }
-                }
-            }
+			//command.message("Updating achievement list... ");
+			loop0:
+			for(let i in e.achievements)
+			{
+				let initialization = 0;
+				if(trackList[e.achievements[i].id])
+				{
+					let done = 0;
+					let total = Object.keys(ACHS[e.achievements[i].id].condition).length; // for some reason after completing single achievement server no longer sends amounts for all requirements in that packet, only for completed ones lol, be careful
+					
+					/*command.message("Found match "+e.achievements[i].id);
+					if(ACHS[e.achievements[i].id].name)
+					{
+						let name = ACHS[e.achievements[i].id].name;
+						command.message(name+':');
+					}*/
+					
+					let amount = 0;
+					for(let j in e.achievements[i].requirements)
+					{
+						let reqname = ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string;
+						let ttamount = e.achievements[i].requirements[j].amount;
+						
+						if(typeof ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].max !== "undefined") // MM
+						{
+							let max = ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].max;
+							let color = (ttamount < max ? "#FF0000" : "#008000" );
+							if(color !== "#FF0000")
+							{
+								done++;
+							}
+							amount = (j<1 ? '' : amount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+ttamount+'</font>/<font color="'+color+'">'+max+'</font>';
+							//console.log(String(amount));
+							//command.message(ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string);
+							if(j == total-1 && amount != trackList[e.achievements[i].id].count)
+							{
+								if (trackList[e.achievements[i].id].count === 0)
+								{
+									initialization = e.achievements[i].id;
+									//console.log("initialization " + e.achievements[i].id)
+								}
+								if(e.achievements[i].id != initialization)
+								{
+									command.message(`UPD ${e.achievements[i].id}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${e.achievements[i].id}\">&lt;${ACHS[e.achievements[i].id].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[e.achievements[i].id].detail}</font> ${amount}`);
+								}
+								if(done < total)
+								{
+									trackList[e.achievements[i].id].count = amount;
+									changed = true;
+								}
+							}
+						}
+						else
+						{
+							amount = e.achievements[i].requirements[j].amount;
+							if(amount == 1)
+							{
+								done++;
+							}
+							//command.message('UPD: '+e.achievements[i].id+' - '+reqname+ ' #'+j+' <font color="#FF0000">'+amount+'</font>')
+							let found = false;
+							for(let k in trackList) // already tracking?
+							{
+								if(trackList[k].name == reqname)
+								{
+									found = true;
+									break;
+								}
+							}
+							if(!found)
+							{
+								let queue = [reqname], aqueue = [amount];
+								loop1:
+								while(queue.length !== 0)
+								{
+									reqname = queue.pop();
+									amount = aqueue.pop();
+									loop2:
+									for(let l in ACHS)
+									{
+										if(ACHS[l].name === reqname)
+										{
+											let tdone = 0;
+											let ttotal = 99;
+											if(typeof ACHS[l].condition[0].max === "undefined") // another link (probably)
+											{
+												//command.message("req is a link again");
+												tdone = 0;
+												ttotal = Object.keys(ACHS[l].condition).length;
+												loop3:
+												for(let m in ACHS[l].condition)
+												{
+													let treqname = ACHS[l].condition[m].string;
+													let tamount = 0;
+													loop4:
+													for(let n in e.achievements)
+													{
+														if(l == e.achievements[n].id)
+														{
+															tamount = e.achievements[n].requirements[m].amount;
+															//command.message('found amount '+ tamount +' for #'+ m +' sub-req of '+l+': '+treqname);
+															break loop4; // we have already found our reqname, no need to look further
+														}
+													}
+													if(!tamount)
+													{
+														//command.message('adding req '+l+': '+reqname);
+														queue.push(treqname);
+														aqueue.push(tamount);
+													}
+													else
+													{
+														tdone++;
+													}
+												}
+											}
+											else
+											{
+												amount = 1;
+												loop5:
+												for(let n in e.achievements)
+												{
+													if(l == e.achievements[n].id)
+													{
+														tdone = 0;
+														ttotal = Object.keys(ACHS[l].condition).length;
+														loop6:
+														for(let p in ACHS[l].condition)
+														{
+															let tttamount = e.achievements[n].requirements[p].amount;
+															let tmax = ACHS[l].condition[p].max;
+															let tcolor = (tttamount < tmax ? "#FF0000" : "#008000" );
+															if(tcolor !== "#FF0000")
+															{
+																tdone++;
+															}
+															//command.message('found MM amount '+ e.achievements[n].requirements[p].amount +'/'+ACHS[l].condition[p].max+' for #'+ p +' sub-req of '+l+': '+ACHS[l].condition[p].string);
+															amount = (p<1 ? '' : amount )+ '\n<font color="#FFF380">'+ACHS[l].condition[p].string+'</font>: <font color="#008000">'+tttamount+'</font>/<font color="'+tcolor+'">'+tmax+'</font>';
+														}
+														break loop5; // we have already found our reqname, no need to look further
+													}
+												}
+											}
+											if(amount !== 1 && tdone < ttotal)
+											{
+												trackList[l] =  {name: reqname, count: amount};
+												changed = true;
+											}
+											break loop2; // we have already found our reqname, no need to look further
+										}
+									}
+								}
+							}
+						}
+					}
+					initialization = 0;
+					if(done == total)
+					{
+						//console.log(e.achievements[i].id + ' done total ' +done+ ' of ' + total);
+						command.message(`${e.achievements[i].id}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${e.achievements[i].id}\">&lt;${ACHS[e.achievements[i].id].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[e.achievements[i].id].detail}</font>: <font color="#008000">Completed</font>`);
+						delete trackList[e.achievements[i].id];
+						changed = true;
+						done = 0;
+						amount = 0;
+					}
+				}
+			}
         }
     })
-    
 }
