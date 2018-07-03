@@ -1,0 +1,12 @@
+{
+	"files": {
+		"data.json": "e70ecd649eaf2494e39110a36ce4564c9861f9940aad6761387786330e580431",
+		"index.js": "889e1e4e531a8227265202f03b9064f3e4e17fb046c69c0d355518db65c378b1",
+		"README.md": "0b7ec94f8abca0543091a63386ef96ebf0ed88875ae36427fd38051c7c2401cf",
+		"module.json": "fcb850743e148a07885b2e0de12a3eb39243a540f3df9e4438962e7174bfe710"
+	},
+	"defs": {
+		"S_UPDATE_ACHIEVEMENT_PROGRESS": 1,
+		"S_LOGIN": 9
+	}
+}
