@@ -56,34 +56,34 @@ module.exports = function achs(dispatch) {
 				let found = false;
                 if(!isNaN(value) && ACHS[value])
 				{
+					found = true;
 					if(!trackList[value])
 					{
 						tracking = true;
-						found = true;
 						command.message(`now Tracking: ${value}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${value}\">&lt;${ACHS[value].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[value].detail}</font>`);
 						trackList[value] = {name: ACHS[value].name, count: 0};
 					}
 					else
 					{
-						command.message(j +" is already being tracked");
+						command.message(value +" is already being tracked");
 					}
                 }
 				else if(isNaN(value))
 				{
 					for(let l in ACHS)
 					{
-						if(ACHS[l].name === value)
+						if(ACHS[l].name.toLowerCase() === value.toLowerCase())
 						{
+							found = true;
 							if(!trackList[l])
 							{
 								tracking = true;
-								found = true;
 								command.message(`now Tracking: ${l}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${l}\">&lt;${ACHS[l].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[l].detail}</font>`);
 								trackList[l] = {name: ACHS[l].name, count: 0};
 							}
 							else
 							{
-								command.message(j +" is already being tracked");
+								command.message(value +" is already being tracked");
 							}
 							break;
 						}
@@ -154,7 +154,7 @@ module.exports = function achs(dispatch) {
         }
 	})
 	
-	dispatch.hook('S_LOGIN', 9, e=> {
+	dispatch.hook('S_LOGIN', 10, e=> {
             settingsFileName = `./saves/${e.name}-${e.serverId}.json`;
 			trackList = loadJson();
 			if(Object.keys(trackList).length)
