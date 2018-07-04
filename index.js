@@ -38,6 +38,11 @@ module.exports = function achs(dispatch) {
 		console.log('Saving achievements to database file...');
 		saveJson(trackList);
 	});
+	
+	this.destructor = function() {
+        //console.log('Saving achievements to database file...');
+		saveJson(trackList);
+	}
         
     command.add('a', (opt, ...value) => {
         //opt = opt.toLowerCase();
