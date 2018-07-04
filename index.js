@@ -12,7 +12,7 @@ module.exports = function achs(dispatch) {
 		settingsFileName;
 	
 	function saveJson(obj) {
-		if(obj){
+		if(Object.keys(obj).length && changed){
         try {
             fs.writeFileSync(path.join(__dirname, settingsFileName), JSON.stringify(obj, null, "\t"));
         } catch (err) {
@@ -36,10 +36,7 @@ module.exports = function achs(dispatch) {
 			
 	process.on('exit', ()=> {
 		console.log('Saving achievements to database file...');
-		if(changed)
-		{
-			saveJson(trackList);
-		}
+		saveJson(trackList);
 	});
         
     command.add('a', (opt, ...value) => {
@@ -155,7 +152,11 @@ module.exports = function achs(dispatch) {
 	})
 	
 	dispatch.hook('S_LOGIN', 10, e=> {
-            settingsFileName = `./saves/${e.name}-${e.serverId}.json`;
+			if(settingsFileName) // it's a relogin to another character, lets save previous
+			{
+				saveJson(trackList);
+			}
+			settingsFileName = `./saves/${e.name}-${e.serverId}.json`;
 			trackList = loadJson();
 			if(Object.keys(trackList).length)
 			{
