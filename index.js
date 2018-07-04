@@ -15,6 +15,7 @@ module.exports = function achs(dispatch) {
 		if(Object.keys(obj).length && changed){
         try {
             fs.writeFileSync(path.join(__dirname, settingsFileName), JSON.stringify(obj, null, "\t"));
+			changed = false;
         } catch (err) {
             return false;
         }
