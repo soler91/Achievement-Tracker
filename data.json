@@ -6073,16 +6073,16 @@
 		"detail": "Complete the Festival of the Sun achievements listed below.",
 		"condition": {
 			"0": {
-				"string": "Festival of the Sun: I Said Freeze!"
+				"string": "I Said Freeze!"
 			},
 			"1": {
-				"string": "Festival of the Sun: Snake-Eyed"
+				"string": "Snake-Eyed"
 			},
 			"2": {
-				"string": "Festival of the Sun: Triple Crown"
+				"string": "Triple Crown"
 			},
 			"3": {
-				"string": "Festival of the Sun: Tanks a Lot"
+				"string": "Tanks a Lot"
 			}
 		}
 	},
