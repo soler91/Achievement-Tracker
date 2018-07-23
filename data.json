@@ -6223,16 +6223,16 @@
 		"detail": "Complete the achievements listed below.",
 		"condition": {
 			"0": {
-				"string": "Rootstock: All the Prizes Are Mine!"
+				"string": "All the Prizes Are Mine!"
 			},
 			"1": {
-				"string": "Rootstock: Please Drunk Responsibility"
+				"string": "Please Drunk Responsibility"
 			},
 			"2": {
-				"string": "Rootstock: Good Eats"
+				"string": "Good Eats"
 			},
 			"3": {
-				"string": "Rootstock: Stairway to Heaven"
+				"string": "Stairway to Heaven"
 			}
 		}
 	},
