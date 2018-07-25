@@ -170,7 +170,7 @@ module.exports = function achs(dispatch) {
 			}
 
         });
-	
+		
     dispatch.hook('S_UPDATE_ACHIEVEMENT_PROGRESS', 1, e => {
         if(tracking){
 			//command.message("Updating achievement list... ");
@@ -181,7 +181,7 @@ module.exports = function achs(dispatch) {
 				if(trackList[e.achievements[i].id])
 				{
 					let done = 0;
-					let total = Object.keys(ACHS[e.achievements[i].id].condition).length; // for some reason after completing single achievement server no longer sends amounts for all requirements in that packet, only for completed ones lol, be careful
+					let total = Object.keys(ACHS[e.achievements[i].id].condition).length;
 					
 					/*command.message("Found match "+e.achievements[i].id);
 					if(ACHS[e.achievements[i].id].name)
@@ -194,20 +194,20 @@ module.exports = function achs(dispatch) {
 					for(let j in e.achievements[i].requirements)
 					{
 						let reqname = ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string;
-						let ttamount = e.achievements[i].requirements[j].amount;
+						let amount = e.achievements[i].requirements[j].amount;
 						
 						if(typeof ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].max !== "undefined") // MM
 						{
 							let max = ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].max;
-							let color = (ttamount < max ? "#FF0000" : "#008000" );
+							let color = (amount < max ? "#FF0000" : "#008000" );
 							if(color !== "#FF0000")
 							{
 								done++;
 							}
-							amount = (j<1 ? '' : amount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+ttamount+'</font>/<font color="'+color+'">'+max+'</font>';
-							//console.log(String(amount));
+							ttamount = (j<1 ? '' : ttamount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+amount+'</font>/<font color="'+color+'">'+max+'</font>';
+							//console.log(String(ttamount));
 							//command.message(ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string);
-							if(j == total-1 && amount != trackList[e.achievements[i].id].count)
+							if(j == total-1 && ttamount != trackList[e.achievements[i].id].count)
 							{
 								if (trackList[e.achievements[i].id].count === 0)
 								{
@@ -216,21 +216,22 @@ module.exports = function achs(dispatch) {
 								}
 								if(e.achievements[i].id != initialization)
 								{
-									command.message(`UPD ${e.achievements[i].id}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${e.achievements[i].id}\">&lt;${ACHS[e.achievements[i].id].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[e.achievements[i].id].detail}</font> ${amount}`);
+									command.message(`UPD ${e.achievements[i].id}: <font color="#00FFFF"><ChatLinkAction param=\"7#####${e.achievements[i].id}\">&lt;${ACHS[e.achievements[i].id].name}&gt;</ChatLinkAction></font>: \n<font color="#FDD017">${ACHS[e.achievements[i].id].detail}</font> ${ttamount}`);
 								}
 								if(done < total)
 								{
-									trackList[e.achievements[i].id].count = amount;
+									trackList[e.achievements[i].id].count = ttamount;
 									changed = true;
 								}
 							}
 						}
 						else
 						{
-							amount = e.achievements[i].requirements[j].amount;
+							let thisdone = false;
 							if(amount == 1)
 							{
 								done++;
+								thisdone = true;
 							}
 							//command.message('UPD: '+e.achievements[i].id+' - '+reqname+ ' #'+j+' <font color="#FF0000">'+amount+'</font>')
 							let found = false;
@@ -239,10 +240,16 @@ module.exports = function achs(dispatch) {
 								if(trackList[k].name == reqname)
 								{
 									found = true;
+									if(thisdone) // then what is it doing in our tracklist?
+									{
+										console.log("deleted achievement " + k + " " + trackList[k].name + " as completed (fix)");
+										command.message("deleted achievement " + k + " " + trackList[k].name + " as completed (fix)");
+										delete trackList[k];
+									}
 									break;
 								}
 							}
-							if(!found)
+							if(!found && !thisdone) // not yet tracking and it's not completed
 							{
 								let queue = [reqname], aqueue = [amount];
 								loop1:
@@ -277,7 +284,7 @@ module.exports = function achs(dispatch) {
 															break loop4; // we have already found our reqname, no need to look further
 														}
 													}
-													if(!tamount)
+													if(tamount == 0)
 													{
 														//command.message('adding req '+l+': '+reqname);
 														queue.push(treqname);
