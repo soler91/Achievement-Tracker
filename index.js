@@ -191,6 +191,7 @@ module.exports = function achs(dispatch) {
 					}*/
 					
 					let amount = 0;
+					let ttamount = "";
 					for(let j in e.achievements[i].requirements)
 					{
 						let reqname = ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string;
@@ -204,7 +205,7 @@ module.exports = function achs(dispatch) {
 							{
 								done++;
 							}
-							let ttamount = (j<1 ? '' : ttamount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+amount+'</font>/<font color="'+color+'">'+max+'</font>';
+							ttamount = (j<1 ? '' : ttamount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+amount+'</font>/<font color="'+color+'">'+max+'</font>';
 							//console.log(String(ttamount));
 							//command.message(ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string);
 							if(j == total-1 && ttamount != trackList[e.achievements[i].id].count)
