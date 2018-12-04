@@ -204,7 +204,7 @@ module.exports = function achs(dispatch) {
 							{
 								done++;
 							}
-							ttamount = (j<1 ? '' : ttamount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+amount+'</font>/<font color="'+color+'">'+max+'</font>';
+							let ttamount = (j<1 ? '' : ttamount )+ '\n<font color="#FFF380">'+ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string+'</font>: <font color="#008000">'+amount+'</font>/<font color="'+color+'">'+max+'</font>';
 							//console.log(String(ttamount));
 							//command.message(ACHS[e.achievements[i].id].condition[e.achievements[i].requirements[j].index].string);
 							if(j == total-1 && ttamount != trackList[e.achievements[i].id].count)
