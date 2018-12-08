@@ -1,10 +1,9 @@
-const   Command = require('command'),
-		path = require('path'),
+const   path = require('path'),
 		fs = require('fs'),
         ACHS = require('./data.json');
 
 module.exports = function achs(dispatch) {
-    const command = Command(dispatch);
+    const command = dispatch.command
 
     let tracking = false,
         trackList = {},
