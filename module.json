@@ -2,9 +2,10 @@
 	"disableAutoUpdate": false,
 	"name": "Achievements-Master",
 	"author": "Owyn",
-	"description": "Tracks achievement progress",
+	"description": "Tracks achievements progress",
 	"options": {
-		"niceName": "A"
+		"niceName": "A",
+		"guiName": "Achievements Master"
 	},
 	"servers": ["https://raw.githubusercontent.com/Owyn/Achievements/master/"],
 	"supportUrl": "https://github.com/Owyn/Achievements/issues"
