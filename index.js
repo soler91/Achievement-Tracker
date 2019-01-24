@@ -156,7 +156,7 @@ module.exports = function achs(dispatch) {
         }
 	})
 	
-	dispatch.hook('S_LOGIN', 10, e=> {
+	dispatch.hook('S_LOGIN', 12, e=> {
 			if(settingsFileName) // it's a relogin to another character, lets save previous
 			{
 				saveJson(trackList);
