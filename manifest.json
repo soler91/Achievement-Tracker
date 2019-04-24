@@ -2,11 +2,11 @@
 	"files": {
 		"README.md": "2203173388f6e9be0e948707c5fe8bbd57237ea0170bdb6002ac44029a897c2b",
 		"data.json": "44565caf5467f471410ecadd1b72ec1c2e4ca12d0007406204aa4310188a4a9b",
-		"index.js": "d1f898bafdcd859847e130eb2675309d4b5dee5b2dd925f0d165be577d10aa80",
+		"index.js": "2eab48fd687ce48b128b5a81fb54ff596c06bc12004bf476e5e10d0eadce8eb6",
 		"module.json": "ecbb1bafd688fa9fa9819d4ef47e27a1bb528f0f397cad5fb1db2f80df4f071c"
 	},
 	"defs": {
-		"S_LOGIN": 12,
+		"S_LOGIN": [12,13],
 		"S_UPDATE_ACHIEVEMENT_PROGRESS": 1
 	}
 }
