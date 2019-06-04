@@ -10,37 +10,42 @@ module.exports = function achs(dispatch) {
 		changed = false,
 		settingsFileName;
 	
-	function saveJson(obj) {
-		if(Object.keys(obj).length && changed){
-        try {
-            fs.writeFileSync(path.join(__dirname, settingsFileName), JSON.stringify(obj, null, "\t"));
-			changed = false;
-        } catch (err) {
-            return false;
-        }
+	function saveJson(obj)
+	{
+		if (Object.keys(obj).length && changed)
+		{
+			console.log('Saving achievements to database file...');
+			try
+			{
+				fs.writeFileSync(path.join(__dirname, settingsFileName), JSON.stringify(obj, null, "\t"));
+				changed = false;
+			}
+			catch (err)
+			{
+				changed = true;
+				return false;
+			}
 		}
-    }
-	
-	function loadJson() {
-        try {
-            return JSON.parse(fs.readFileSync(path.join(__dirname, settingsFileName), "utf8"));
-        } catch (err) {
-            return {};
-        }
-    }
+	}
+
+	function loadJson()
+	{
+		try
+		{
+			return JSON.parse(fs.readFileSync(path.join(__dirname, settingsFileName), "utf8"));
+		}
+		catch (err)
+		{
+			return {};
+		}
+	}
 	
 	if(!fs.existsSync(path.join(__dirname, './saves')))
 	{
 		fs.mkdirSync(path.join(__dirname, './saves'));
 	}
-			
-	process.on('exit', ()=> {
-		console.log('Saving achievements to database file...');
-		saveJson(trackList);
-	});
 	
 	this.destructor = function() {
-        //console.log('Saving achievements to database file...');
 		saveJson(trackList);
 	}
         
