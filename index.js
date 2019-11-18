@@ -176,7 +176,7 @@ module.exports = function achs(dispatch) {
         });
 		
     dispatch.hook('S_UPDATE_ACHIEVEMENT_PROGRESS', 1, e => {
-        if(tracking && e.achievements)
+        if(tracking && e.achievements && e.achievements.length)
 		{
 			//command.message("Updating achievement list... ");
 			loop0:
