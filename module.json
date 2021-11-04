@@ -1,0 +1,12 @@
+{
+	"disableAutoUpdate": false,
+	"name": "Achievements-Master",
+	"author": "Owyn",
+	"description": "Tracks achievements progress",
+	"options": {
+		"niceName": "A",
+		"guiName": "Achievements Master"
+	},
+	"servers": ["https://raw.githubusercontent.com/Owyn/Achievements/master/"],
+	"supportUrl": "https://github.com/Owyn/Achievements/issues"
+}
